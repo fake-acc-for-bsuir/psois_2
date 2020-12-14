@@ -1,0 +1,66 @@
+#logoTitle {
+    -fx-text-fill: #ea9655;
+    -fx-font-size: 36px;
+}
+
+#descriptionLabel {
+    -fx-text-fill: #e5745c;
+}
+
+#developedByLabel {
+    -fx-text-fill: #464646;
+}
+
+#header {
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #e5745c;
+    -fx-background-color: #303030;
+}
+
+#statusLabel {
+    -fx-text-fill: #e5745c;
+    -fx-text-alignment: center;
+}
+
+#body {
+    -fx-background-color: #303030;
+}
+
+#loadImageButton, #saveImageButton, #doTheMagicButton {
+    -fx-background-size: 50%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-pref-width: 50px;
+    -fx-pref-height: 50px;
+    -fx-cursor: hand;
+}
+
+#loadImageButton {
+    -fx-background-image: url("/upload.png");
+}
+
+#saveImageButton {
+    -fx-background-image: url("/download.png");
+}
+
+#doTheMagicButton {
+    -fx-background-image: url("/magic-wand.png");
+    -fx-background-size: 70%;
+}
+
+#loadingLabel, #doneLabel {
+    -fx-background-size: 100%;
+    -fx-pref-width: 100px;
+    -fx-pref-height: 100px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#loadingLabel {
+    -fx-background-image: url("/loading.gif");
+}
+
+#doneLabel {
+    -fx-background-image: url("/done.png");
+    -fx-background-size: 85%;
+}

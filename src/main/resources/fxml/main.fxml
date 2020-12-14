@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:id="body">
+    <VBox fx:id="header">
+        <padding>
+            <Insets bottom="5"/>
+        </padding>
+        <HBox alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="5" left="5" bottom="5" right="5"/>
+            </padding>
+            <ImageView fitWidth="60" fitHeight="60" fx:id="logoImage">
+                <Image url="/logo.png"/>
+            </ImageView>
+            <VBox alignment="CENTER_LEFT">
+                <padding>
+                    <Insets left="8"/>
+                </padding>
+                <Label fx:id="logoTitle">
+                    SCUM Colorizer 2000™
+                </Label>
+                <Label fx:id="descriptionLabel">
+                    Super Cool Ultimate Mega Colorizer 2000™ brings dreams into reality just for $0.99/month*
+                </Label>
+            </VBox>
+        </HBox>
+    </VBox>
+    <HBox VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="5" bottom="5" left="5" right="5"/>
+        </padding>
+        <VBox alignment="CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                <ImageView fx:id="originalImage" fitWidth="300" fitHeight="300" preserveRatio="true"/>
+            </HBox>
+            <Separator>
+                <padding>
+                    <Insets top="5" bottom="5" left="5" right="5"/>
+                </padding>
+            </Separator>
+            <Button fx:id="loadImageButton" onAction="#loadOriginal"/>
+        </VBox>
+        <VBox HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" alignment="CENTER">
+            <StackPane HBox.hgrow="ALWAYS">
+                <Button fx:id="doTheMagicButton" onAction="#doTheMagic" disable="true"/>
+                <Label fx:id="loadingLabel" visible="false"/>
+                <Label fx:id="doneLabel" visible="false"/>
+            </StackPane>
+            <HBox maxWidth="100.0" alignment="CENTER">
+                <Label fx:id="statusLabel" wrapText="true"/>
+            </HBox>
+        </VBox>
+        <VBox alignment="CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+            <HBox alignment="CENTER" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS">
+                <ImageView fx:id="resultImage" fitWidth="300" fitHeight="300" preserveRatio="true"/>
+            </HBox>
+            <Separator>
+                <padding>
+                    <Insets top="5" bottom="5" left="5" right="5"/>
+                </padding>
+            </Separator>
+            <Button fx:id="saveImageButton" onAction="#saveResult" disable="true"/>
+        </VBox>
+    </HBox>
+    <HBox alignment="CENTER_RIGHT">
+        <Label fx:id="developedByLabel">
+            <padding>
+                <Insets left="5" bottom="5" right="5"/>
+            </padding>
+            Developed by Artsiom Drapun and Ivan Terekhovich, 2020
+        </Label>
+    </HBox>
+</VBox>

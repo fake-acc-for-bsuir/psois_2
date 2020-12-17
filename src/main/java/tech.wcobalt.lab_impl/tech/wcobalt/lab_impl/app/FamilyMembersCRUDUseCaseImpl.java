@@ -62,4 +62,9 @@ public class FamilyMembersCRUDUseCaseImpl implements FamilyMembersCRUDUseCase {
 
         return doesAtLeastOneFamilyAdministratorExist;
     }
+
+    @Override
+    public FamilyMember loadFamilyMember(int familyMember) {
+        return familyMembersRepository.loadFamilyMember(familyMember);
+    }
 }

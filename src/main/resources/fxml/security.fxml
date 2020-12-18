@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      prefHeight="600" prefWidth="389" alignment="CENTER_RIGHT" VBox.vgrow="ALWAYS">
+    <VBox VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
+        <HBox styleClass="header" alignment="CENTER_LEFT">
+            <Label styleClass="header_title">Security</Label>
+        </HBox>
+        <HBox VBox.vgrow="ALWAYS">
+            <VBox spacing="10" HBox.hgrow="ALWAYS">
+                <padding>
+                    <Insets top="5" left="5" right="5" bottom="5"/>
+                </padding>
+                <PasswordField styleClass="hl_textfield" promptText="Old password" fx:id="securityOldPassword"/>
+                <PasswordField styleClass="hl_textfield" promptText="New password" fx:id="securityNewPassword"/>
+                <HBox alignment="CENTER_RIGHT">
+                    <Button styleClass="hl_button" onAction="#onChangePassword">Change password</Button>
+                </HBox>
+            </VBox>
+            <VBox fx:id="menu">
+                <Button fx:id="goHomeButton" styleClass="side_menu_element" onAction="#goToHome"/>
+                <Button fx:id="goToFavoritesButton" styleClass="side_menu_element" onAction="#goToFavorites"/>
+                <Button fx:id="goToSearchButton" styleClass="side_menu_element" onAction="#goToSearch"/>
+                <Button fx:id="goToUsersButton" styleClass="side_menu_element" onAction="#goToUsers"/>
+                <Button fx:id="goToCollectionsButton" styleClass="side_menu_element" onAction="#goToCollections"/>
+                <Button fx:id="goToSecurityButton" styleClass="side_menu_element" onAction="#goToSecurity"/>
+                <Button fx:id="goOutButton" styleClass="side_menu_element" onAction="#goOut"/>
+            </VBox>
+        </HBox>
+    </VBox>
+</HBox>

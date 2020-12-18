@@ -8,4 +8,5 @@ module tech.wcobalt.lab_impl {
     requires javafx.swing;
 
     exports tech.wcobalt.lab_impl.ui to javafx.base, javafx.graphics, javafx.fxml, javafx.controls;
+    opens tech.wcobalt.lab_impl.ui to javafx.base, javafx.graphics, javafx.fxml, javafx.controls;
 }

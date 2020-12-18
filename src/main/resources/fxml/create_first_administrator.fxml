@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      prefHeight="600" prefWidth="389">
+    <HBox styleClass="header" alignment="CENTER_LEFT">
+        <Label styleClass="header_title">Home Library</Label>
+    </HBox>
+    <Label styleClass="greetings">
+        You have to create the first family administrator
+    </Label>
+    <VBox spacing="10">
+        <padding>
+            <Insets top="5" left="5" right="5" bottom="5"/>
+        </padding>
+        <TextField styleClass="hl_textfield" promptText="Nickname" fx:id="cffanickname"/>
+        <PasswordField styleClass="hl_textfield" promptText="Password" fx:id="cffapassword"/>
+        <HBox alignment="CENTER_RIGHT">
+            <Button styleClass="hl_button" onAction="#onCreateFirstFamilyAdministrator">Done</Button>
+        </HBox>
+    </VBox>
+</VBox>

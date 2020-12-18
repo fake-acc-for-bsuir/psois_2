@@ -4,11 +4,13 @@ import tech.wcobalt.lab_impl.app.*;
 import tech.wcobalt.lab_impl.domain.Book;
 import tech.wcobalt.lab_impl.domain.CDAudio;
 import tech.wcobalt.lab_impl.domain.CDVideo;
+import tech.wcobalt.lab_impl.domain.Category;
 import tech.wcobalt.lab_impl.infrastructure.*;
 import tech.wcobalt.lab_impl.persistence.*;
 import tech.wcobalt.lab_impl.ui.UI;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class Launcher {
@@ -16,6 +18,7 @@ public class Launcher {
         SessionsRepository sessionsRepository = new SessionsRepositoryImpl(new ArrayList<>());
         FamilyMembersRepository familyMembersRepository = new FamilyMembersRepositoryImpl(new ArrayList<>());
         CategoriesRepository categoriesRepository = new CategoriesRepositoryImpl(new ArrayList<>());
+        categoriesRepository.createCategory(new Category(3, 10000, "asdad"));
         EntriesRepository entriesRepository = new EntriesRepositoryImpl(categoriesRepository, new ArrayList<>());
         CommentsRepository commentsRepository = new CommentsRepositoryImpl(new ArrayList<>());
 

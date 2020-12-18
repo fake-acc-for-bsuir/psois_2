@@ -6,6 +6,8 @@ import tech.wcobalt.lab_impl.domain.FamilyMember;
 import java.util.List;
 
 public interface CategoriesCRUDUseCase {
+    Category loadCategory(int category);
+    
     Category createCategory(FamilyMember whoPerforms, Category category) throws RightsViolationException;
 
     void saveCategory(FamilyMember whoPerforms, Category category) throws RightsViolationException;

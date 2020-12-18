@@ -1,37 +1,40 @@
 package tech.wcobalt.lab_impl.ui;
 
+import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tech.wcobalt.lab_impl.app.*;
+import tech.wcobalt.lab_impl.domain.Category;
+import tech.wcobalt.lab_impl.domain.Entry;
 import tech.wcobalt.lab_impl.domain.FamilyMember;
 import tech.wcobalt.lab_impl.domain.Session;
-import tech.wcobalt.lab_impl.persistence.CDAudiosRepository;
-import tech.wcobalt.lab_impl.persistence.CDVideosRepository;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class UI {
     private static final String MAIN_CSS = "/css/main.css";
     private static final String MODENA_CSS = "/css/modena.css";
 
     private static final String LOGIN_FXML = "/fxml/login.fxml";
-    private static final String LOGIN_CSS = "/css/login.css";
 
     private static final String HOME_FXML = "/fxml/home.fxml";
-    private static final String HOME_CSS = "/css/home.css";
+
+    private static final String SECURITY_FXML = "/fxml/security.fxml";
 
     private static final String CREATE_FIRST_ADMINISTRATOR_FXML = "/fxml/create_first_administrator.fxml";
-    private static final String CREATE_FIRST_ADMINISTRATOR_CSS = "/css/create_first_administrator.css";
 
     private static final String TITLE = "Home Library";
 
@@ -53,14 +56,24 @@ public class UI {
     //model
     private Session session;
     private FamilyMember currentFamilyMember;
+    private Category currentCategoryHome;
 
     private Stage stage;
 
     //elements
     @FXML
     private TextField cffanickname, cffapassword;
+
     @FXML
     private TextField signInNickname, signInPassword;
+
+    @FXML
+    private TextField securityOldPassword, securityNewPassword;
+
+    @FXML
+    private ListView<CategoryElement> homeList;
+
+    private static final boolean IS_INFRASTRUCTURE_STUBBED = true;
 
     public UI(AuthenticateUseCase authenticateUseCase, CategoriesCRUDUseCase categoriesCRUDUseCase,
               EntriesCRUDUseCase entriesCRUDUseCase, BooksCRUDUseCase booksCRUDUseCase,
@@ -93,6 +106,10 @@ public class UI {
         stage.setResizable(false);
         stage.setTitle(TITLE);
 
+        handleAuthentication();
+    }
+
+    private void handleAuthentication() {
         Session loadedSession = saveLoadSessionsUseCase.loadSession();
 
         if (loadedSession != null) {
@@ -110,17 +127,87 @@ public class UI {
 
     public void goToHome() {
         stage.setScene(loadFXML(HOME_FXML, Arrays.asList(
-                getClass().getResource(HOME_CSS).toExternalForm(),
                 getClass().getResource(MODENA_CSS).toExternalForm(),
                 getClass().getResource(MAIN_CSS).toExternalForm()
         )));
 
+        homeList.setCellFactory(param -> {
+            ListCell<CategoryElement> element = new ListCell<>() {
+                @Override
+                protected void updateItem(CategoryElement categoryElement, boolean empty) {
+                    super.updateItem(categoryElement, empty);
+
+                    if (empty || categoryElement == null)
+                        setText(null);
+                    else {
+                        if (categoryElement.isCategory())
+                            getStyleClass().add("category_element");
+
+                        setText(categoryElement.isCategory() ? categoryElement.getCategory().getName()
+                                : categoryElement.getEntry().getTitle());
+                    }
+                }
+            };
+
+            element.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    if (mouseEvent.getClickCount() == 2) {
+                        goToCategoryElement();
+                    }
+                }
+            });
+
+            return element;
+        });
+
+        try {
+            currentCategoryHome = categoriesCRUDUseCase.loadRootCategory(currentFamilyMember);
+
+            showCurrentCategoryHome();
+        } catch (RightsViolationException e) {
+            e.printStackTrace();
+
+            showMessage(e.getMessage());
+        }
+
         showStage();
+    }
+
+    private void showCurrentCategoryHome() {
+        try {
+            List<CategoryElement> categoryElements =
+                    viewCategoryUseCase.loadCategoryElements(currentFamilyMember, currentCategoryHome.getId(), true);
+
+            homeList.itemsProperty().getValue().clear();
+            homeList.itemsProperty().getValue().addAll(categoryElements);
+        } catch (RightsViolationException exc) {
+            exc.printStackTrace();
+
+            showMessage(exc.getMessage());
+        }
+    }
+
+    private void goToCategoryElement() {
+        CategoryElement categoryElement = homeList.getSelectionModel().getSelectedItem();
+
+        if (categoryElement != null) {
+            if (categoryElement.isCategory()) {
+                currentCategoryHome = categoryElement.getCategory();
+
+                showCurrentCategoryHome();
+            } else {
+                goToEntry(categoryElement.getEntry());
+            }
+        }
+    }
+
+    public void goToEntry(Entry entry) {
+
     }
 
     public void goToLogin() {
         stage.setScene(loadFXML(LOGIN_FXML, Arrays.asList(
-                getClass().getResource(LOGIN_CSS).toExternalForm(),
                 getClass().getResource(MODENA_CSS).toExternalForm(),
                 getClass().getResource(MAIN_CSS).toExternalForm()
         )));
@@ -130,12 +217,73 @@ public class UI {
 
     public void goToCreateFirstAdministrator() {
         stage.setScene(loadFXML(CREATE_FIRST_ADMINISTRATOR_FXML, Arrays.asList(
-                getClass().getResource(CREATE_FIRST_ADMINISTRATOR_CSS).toExternalForm(),
                 getClass().getResource(MODENA_CSS).toExternalForm(),
                 getClass().getResource(MAIN_CSS).toExternalForm()
         )));
 
         showStage();
+    }
+
+    public void goToFavorites() {
+
+    }
+
+    public void goToSearch() {
+
+    }
+
+    public void goToUsers() {
+
+    }
+
+    public void goToCollections() {
+
+    }
+
+    public void goToSecurity() {
+        stage.setScene(loadFXML(SECURITY_FXML, Arrays.asList(
+                getClass().getResource(MODENA_CSS).toExternalForm(),
+                getClass().getResource(MAIN_CSS).toExternalForm()
+        )));
+
+        showStage();
+    }
+
+    public void goBackCategoryHome() {
+        if (currentCategoryHome.getParentCategory() != -1) {
+            currentCategoryHome = categoriesCRUDUseCase.loadCategory(currentCategoryHome.getParentCategory());
+
+            showCurrentCategoryHome();
+        }
+    }
+
+    public void goOut() {
+        saveLoadSessionsUseCase.removeSession();
+
+        session = null;
+        currentFamilyMember = null;
+
+        goToLogin();
+    }
+
+    public void goToCreateEntry() {
+
+    }
+
+    public void goToCreateCategory() {
+        String result = askQuestion("New category", "Name");
+
+        if (result != null) {
+            try {
+                categoriesCRUDUseCase.createCategory(currentFamilyMember, new Category(0, currentCategoryHome.getId(), result));
+
+                showCurrentCategoryHome();
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
     }
 
     public void onSignIn() {
@@ -144,6 +292,9 @@ public class UI {
 
             if (session != null) {
                 currentFamilyMember = familyMembersCRUDUseCase.loadFamilyMember(session.getFamilyMember());
+
+                if (!IS_INFRASTRUCTURE_STUBBED)
+                    saveLoadSessionsUseCase.saveSession(session);
 
                 goToHome();
             } else
@@ -163,6 +314,24 @@ public class UI {
 
             goToLogin();
         } catch (Exception exc) {
+            exc.printStackTrace();
+
+            showMessage(exc.getMessage());
+        }
+    }
+
+    public void onChangePassword() {
+        String oldPassword = securityOldPassword.getText();
+        String newPassword = securityNewPassword.getText();
+
+        try {
+            changeMyPasswordUseCase.changeMyPassword(currentFamilyMember, oldPassword, newPassword);
+
+            securityOldPassword.clear();
+            securityNewPassword.clear();
+
+            showMessage("Your password was successfully changed");
+        } catch (RightsViolationException exc) {
             exc.printStackTrace();
 
             showMessage(exc.getMessage());
@@ -202,5 +371,18 @@ public class UI {
         alert.setTitle(TITLE);
         alert.getButtonTypes().add(ButtonType.OK);
         alert.showAndWait();
+    }
+
+    private String askQuestion(String title, String message) {
+        TextInputDialog prompt = new TextInputDialog();
+
+        prompt.initOwner(stage);
+        prompt.setTitle(title);
+        prompt.setHeaderText(message);
+        prompt.setContentText(null);
+
+        Optional<String> result = prompt.showAndWait();
+
+        return result.isPresent() && !result.get().isEmpty() ? result.get() : null;
     }
 }

@@ -15,7 +15,7 @@ public class Session {
         String token = "";
 
         for (int i = 0; i < TOKEN_SIZE; ++i)
-            token += ('a' + Math.abs(random.nextInt()) % 16);
+            token += (char)('a' + (Math.abs(random.nextInt()) % 6));
 
         return token;
     }

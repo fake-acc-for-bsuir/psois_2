@@ -13,7 +13,7 @@
 <?import javafx.geometry.Insets?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      prefHeight="600" prefWidth="349">
+      prefHeight="600" prefWidth="389">
     <HBox styleClass="header" alignment="CENTER_LEFT">
         <Label styleClass="header_title">Home Library</Label>
     </HBox>

@@ -34,17 +34,21 @@ public class CategoriesRepositoryImpl implements CategoriesRepository {
 
         Queue<Integer> queue = new ArrayDeque<>();
         queue.add(category);
+        boolean firstIteration = true;
 
         while (!queue.isEmpty()) {
             int id = queue.peek();
+            queue.remove();
 
             Category c = loadCategory(id);
-            result.add(c);
 
-            if (recursively)
+            if (!firstIteration)
+                result.add(c);
+
+            if (recursively || firstIteration)
                 queue.addAll(c.getChildrenCategories());
 
-            queue.remove();
+            firstIteration = false;
         }
 
         return result;
@@ -54,6 +58,22 @@ public class CategoriesRepositoryImpl implements CategoriesRepository {
     public Category createCategory(Category category) {
         category.setId(nextId++);
 
+        if (category.getParentCategory() != -1) {
+            if (category.getParentCategory() == rootCategory.getId()) {
+                rootCategory.getChildrenCategories().add(category.getId());
+
+                categories.removeIf(c -> c.getId() == rootCategory.getId());
+
+                categories.add(copyCategory(rootCategory));
+            } else {
+                Category parentCategory = loadCategory(category.getParentCategory());
+
+                parentCategory.getChildrenCategories().add(category.getId());
+
+                saveCategory(parentCategory);
+            }
+        }
+
         categories.add(copyCategory(category));
 
         return copyCategory(category);
@@ -62,7 +82,7 @@ public class CategoriesRepositoryImpl implements CategoriesRepository {
     @Override
     public void saveCategory(Category category) {
         if (category.getId() != rootCategory.getId()) {
-            removeCategory(category);
+            categories.removeIf(c -> c.getId() == category.getId());
 
             categories.add(copyCategory(category));
         }

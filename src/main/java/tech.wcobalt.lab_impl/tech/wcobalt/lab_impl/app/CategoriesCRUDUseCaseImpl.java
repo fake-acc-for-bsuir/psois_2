@@ -15,6 +15,11 @@ public class CategoriesCRUDUseCaseImpl implements CategoriesCRUDUseCase {
     }
 
     @Override
+    public Category loadCategory(int category) {
+        return categoriesRepository.loadCategory(category);
+    }
+
+    @Override
     public Category createCategory(FamilyMember whoPerforms, Category category) throws RightsViolationException {
         if (whoPerforms.getRights() == Rights.FAMILY_ADMINISTRATOR) {
             return categoriesRepository.createCategory(category);

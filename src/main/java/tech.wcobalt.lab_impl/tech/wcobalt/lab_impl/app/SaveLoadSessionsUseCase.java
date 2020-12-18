@@ -6,4 +6,6 @@ public interface SaveLoadSessionsUseCase {
     Session loadSession();
 
     void saveSession(Session session);
+
+    void removeSession();
 }

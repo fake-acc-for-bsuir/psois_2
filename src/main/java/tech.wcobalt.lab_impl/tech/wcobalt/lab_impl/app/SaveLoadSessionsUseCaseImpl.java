@@ -40,8 +40,16 @@ public class SaveLoadSessionsUseCaseImpl implements SaveLoadSessionsUseCase {
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(sessionFile)));
 
             bufferedWriter.write(sessionSerializer.serializeSession(session));
+
+            bufferedWriter.close();
         } catch (IOException exc) {
             exc.printStackTrace(); //that's bad
         }
+    }
+
+    @Override
+    public void removeSession() {
+        if (sessionFile.exists())
+            sessionFile.delete();
     }
 }

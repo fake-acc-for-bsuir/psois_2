@@ -18,7 +18,7 @@ public class CommentsRepositoryImpl implements CommentsRepository {
         List<Comment> list = new ArrayList<>();
 
         for (Comment comment : comments) {
-            if (comment.getId() == entry)
+            if (comment.getEntry() == entry)
                 list.add(copyComment(comment));
         }
 

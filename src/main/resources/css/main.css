@@ -89,6 +89,31 @@
     -fx-cursor: hand;
 }
 
+.remove_comment_button {
+    -fx-background-size: 50%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-pref-width: 40px;
+    -fx-pref-height: 40px;
+    -fx-cursor: hand;
+    -fx-background-image: url("/remove.png");
+}
+
+.comment_author {
+    -fx-font-size: 14px;
+    -fx-text-fill: #ea9655;
+}
+
+.comment_content {
+    -fx-font-size: 14px;
+}
+
+.comment {
+    -fx-border-style: none none solid none;
+    -fx-border-width: 1px;
+    -fx-border-color: #ea9655;
+}
+
 #goToCreateEntryButton {
     -fx-background-image: url("/create.png");
 }
@@ -97,7 +122,7 @@
     -fx-background-image: url("/create_folder.png");
 }
 
-#goBackButton {
+#goBackButton, #goBackFromCommentsButton {
     -fx-background-image: url("/back.png");
 }
 
@@ -113,7 +138,7 @@
     -fx-background-color: #191919;
 }
 
-#goToCreateUserButton {
+#goToCreateUserButton, #goToCreateCommentButton {
     -fx-background-image: url("/create.png");
 }
 

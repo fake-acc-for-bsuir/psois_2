@@ -1,6 +1,5 @@
 package tech.wcobalt.lab_impl.ui;
 
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -8,7 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -37,6 +36,10 @@ public class UI {
 
     private static final String SHOW_ENTRY_FXML = "/fxml/show_entry.fxml";
 
+    private static final String COMMENTS_FXML = "/fxml/comments.fxml";
+
+    private static final String COMMENT_FXML = "/fxml/comment.fxml";
+
     private static final String TITLE = "Home Library";
 
     private static final int MESSAGE_BOX_WIDTH = 230;
@@ -64,6 +67,7 @@ public class UI {
     private Session session;
     private FamilyMember currentFamilyMember;
     private Category currentCategoryHome;
+    private Entry currentEntryToShow;
 
     private Stage stage;
 
@@ -90,7 +94,7 @@ public class UI {
     private ListView<FamilyMember> familyMembersList;
 
     @FXML
-    private VBox whereToShowEntry;
+    private VBox whereToShowEntry, commentsBlock;
 
     private static final boolean IS_INFRASTRUCTURE_STUBBED = true;
 
@@ -294,12 +298,9 @@ public class UI {
                 }
             };
 
-            element.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    if (mouseEvent.getClickCount() == 2) {
-                        goToCategoryElement();
-                    }
+            element.setOnMouseClicked(mouseEvent -> {
+                if (mouseEvent.getClickCount() == 2) {
+                    goToCategoryElement();
                 }
             });
 
@@ -351,8 +352,96 @@ public class UI {
 
     }
 
-    public void goToComments() {
+    public class CommentUI {
+        private Comment comment;
 
+        @FXML
+        private Label commentContent, commentAuthor;
+
+        public CommentUI(Comment comment) {
+            this.comment = comment;
+        }
+
+        public void onRemoveComment() {
+            try {
+                commentsCRUDUseCase.removeComment(currentFamilyMember, comment.getId());
+
+                refreshComments();
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+
+        public void init() {
+            commentContent.setText(comment.getContent());
+
+            FamilyMember author = familyMembersCRUDUseCase.loadFamilyMember(comment.getAuthor());
+
+            commentAuthor.setText(author.getNickname());
+        }
+    }
+
+    public void goToComments() {
+        if (currentEntryToShow != null) {
+            stage.setScene(loadFXML(COMMENTS_FXML, Arrays.asList(
+                    getClass().getResource(MODENA_CSS).toExternalForm(),
+                    getClass().getResource(MAIN_CSS).toExternalForm()
+            )));
+
+            refreshComments();
+
+            showStage();
+        }
+    }
+
+    private void refreshComments() {
+        if (currentEntryToShow != null) {
+            try {
+                commentsBlock.getChildren().clear();
+
+                List<Comment> comments = commentsCRUDUseCase.loadCommentsByEntry(currentFamilyMember, currentEntryToShow.getId());
+
+                for (Comment comment : comments) {
+                    CommentUI commentUI = new CommentUI(comment);
+                    FXMLLoader fxmlLoader = new FXMLLoader();
+                    fxmlLoader.setController(commentUI);
+
+                    VBox commmentVbox = fxmlLoader.load(getClass().getResourceAsStream(COMMENT_FXML));
+
+                    commentUI.init();
+
+                    commentsBlock.getChildren().add(commmentVbox);
+                }
+            } catch (Exception exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+    }
+
+    public void goToCreateComment() {
+        if (currentEntryToShow != null) {
+            String content = askQuestion("New comment", "Message");
+
+            if (content != null) {
+                try {
+                    commentsCRUDUseCase.createComment(currentFamilyMember, content, currentEntryToShow.getId());
+
+                    refreshComments();
+                } catch (RightsViolationException exc) {
+                    exc.printStackTrace();
+
+                    showMessage(exc.getMessage());
+                }
+            }
+        }
+    }
+
+    public void goBackFromComments() {
+        goToShowEntry(currentEntryToShow);
     }
 
     public void goBackFromShowEntry() {
@@ -375,6 +464,8 @@ public class UI {
 
         EntryTypeUI entryTypeUI = entryTypesUIs.get(entry.getTypeId());
         entryTypeUI.showEntry(entry, whereToShowEntry);
+
+        currentEntryToShow = entry;
 
         showStage();
     }

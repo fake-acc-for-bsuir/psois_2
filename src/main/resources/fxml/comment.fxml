@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      HBox.hgrow="ALWAYS" styleClass="comment" spacing="5">
+    <padding>
+        <Insets topRightBottomLeft="5"/>
+    </padding>
+    <HBox HBox.hgrow="ALWAYS">
+        <Label styleClass="comment_author" fx:id="commentAuthor"/>
+        <HBox HBox.hgrow="ALWAYS"/>
+        <Button styleClass="remove_comment_button" onAction="#onRemoveComment"/>
+    </HBox>
+    <Label styleClass="comment_content" fx:id="commentContent" wrapText="true"/>
+</VBox>

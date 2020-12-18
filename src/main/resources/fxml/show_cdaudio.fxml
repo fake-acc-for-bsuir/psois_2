@@ -15,7 +15,7 @@
         <padding>
             <Insets topRightBottomLeft="10"/>
         </padding>
-        <ImageView styleClass="entry_cover" fx:id="cover"/>
+        <ImageView styleClass="entry_cover" fx:id="cover" fitHeight="200" fitWidth="200" preserveRatio="true"/>
     </HBox>
     <HBox spacing="10">
         <Label styleClass="entry_label">Author: </Label>

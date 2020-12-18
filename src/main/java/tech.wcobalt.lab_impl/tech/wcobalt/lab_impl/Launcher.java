@@ -16,7 +16,7 @@ public class Launcher {
         SessionsRepository sessionsRepository = new SessionsRepositoryImpl(new ArrayList<>());
         FamilyMembersRepository familyMembersRepository = new FamilyMembersRepositoryImpl(new ArrayList<>());
         CategoriesRepository categoriesRepository = new CategoriesRepositoryImpl(new ArrayList<>());
-        categoriesRepository.createCategory(new Category(3, 10000, "asdad"));
+        categoriesRepository.createCategory(new Category(3, 10000, "Folder"));
         EntriesRepository entriesRepository = new EntriesRepositoryImpl(categoriesRepository, new ArrayList<>());
         CommentsRepository commentsRepository = new CommentsRepositoryImpl(new ArrayList<>());
 

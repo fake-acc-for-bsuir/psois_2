@@ -10,12 +10,15 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tech.wcobalt.lab_impl.app.*;
 import tech.wcobalt.lab_impl.domain.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.*;
 
 public class UI {
@@ -40,6 +43,8 @@ public class UI {
 
     private static final String COMMENT_FXML = "/fxml/comment.fxml";
 
+    private static final String CREATE_ENTRY_FXML = "/fxml/create_entry.fxml";
+
     private static final String TITLE = "Home Library";
 
     private static final int MESSAGE_BOX_WIDTH = 230;
@@ -59,6 +64,10 @@ public class UI {
 
     interface EntryTypeUI {
         void showEntry(Entry entry, VBox where);
+
+        void showEntryWhenCreating(VBox where);
+
+        void onCreateEntry(Entry entry);
     }
 
     private Map<String, EntryTypeUI> entryTypesUIs;
@@ -96,6 +105,22 @@ public class UI {
     @FXML
     private VBox whereToShowEntry, commentsBlock;
 
+    @FXML
+    private HBox createEntrySelectTypeBlock;
+
+    @FXML
+    private VBox createEntrySpecificityBlock;
+
+    @FXML
+    private TextField createEntryTitle, createEntryAuthor;
+
+    @FXML
+    private TextArea createEntryComment;
+
+    private ToggleGroup createEntryToggleGroup;
+
+    private FileChooser fileChooser;
+
     private static final boolean IS_INFRASTRUCTURE_STUBBED = true;
 
     abstract class BaseEntryTypeUI implements EntryTypeUI {
@@ -129,21 +154,27 @@ public class UI {
         }
     }
 
-    class BookTypeUI extends BaseEntryTypeUI {
-        private static final String FXML = "/fxml/show_book.fxml";
+    public class BookTypeUI extends BaseEntryTypeUI {
+        private static final String SHOW_FXML = "/fxml/show_book.fxml";
+        private static final String CREATE_FXML = "/fxml/create_book.fxml";
 
         @FXML
-        private ImageView cover;
+        private ImageView cover, coverInput;
+
+        @FXML
+        private TextField publishingYearInput, publisherInput;
 
         @FXML
         private Label publisher, publishingYear;
+
+        private String coverUrl;
 
         @Override
         public void showEntry(Entry entry, VBox where) {
             try {
                 Book book = booksCRUDUseCase.loadBook(currentFamilyMember, entry.getId());
 
-                where.getChildren().addAll(loadFXML(FXML));
+                where.getChildren().addAll(loadFXML(SHOW_FXML));
 
                 showEntry(entry);
 
@@ -156,23 +187,65 @@ public class UI {
                 showMessage(exc.getMessage());
             }
         }
+
+        @Override
+        public void showEntryWhenCreating(VBox where) {
+            where.getChildren().addAll(loadFXML(CREATE_FXML));
+        }
+
+        @Override
+        public void onCreateEntry(Entry entry) {
+            try {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Integer.parseInt(publishingYearInput.getText()), Calendar.JANUARY, 1);
+                Book book = new Book(entry.getAddDate(), entry.getComment(), entry.getAuthor(), -1, entry.getCategory(),
+                        entry.getTitle(), calendar.getTime(), publisherInput.getText(), coverUrl);
+
+                booksCRUDUseCase.createBook(currentFamilyMember, book);
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+
+        public void onCoverChoose() {
+            try {
+                File result = fileChooser.showOpenDialog(stage);
+
+                if (result != null) {
+                    coverUrl = result.toURI().toURL().toExternalForm();
+                    coverInput.setImage(new Image(coverUrl));
+                }
+            } catch (MalformedURLException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
     }
 
-    class CDAudioTypeUI extends BaseEntryTypeUI {
-        private static final String FXML = "/fxml/show_cdaudio.fxml";
+    public class CDAudioTypeUI extends BaseEntryTypeUI {
+        private static final String SHOW_FXML = "/fxml/show_cdaudio.fxml";
+        private static final String CREATE_FXML = "/fxml/create_cdaudio.fxml";
 
         @FXML
-        private ImageView cover;
+        private ImageView cover, coverInput;;
+
+        @FXML
+        private TextField releaseYearInput, labelInput;
 
         @FXML
         private Label label, releaseYear;
+
+        private String coverUrl;
 
         @Override
         public void showEntry(Entry entry, VBox where) {
             try {
                 CDAudio cdAudio = cdAudiosCRUDUseCase.loadCDAudio(currentFamilyMember, entry.getId());
 
-                where.getChildren().addAll(loadFXML(FXML));
+                where.getChildren().addAll(loadFXML(SHOW_FXML));
 
                 showEntry(entry);
 
@@ -185,29 +258,107 @@ public class UI {
                 showMessage(exc.getMessage());
             }
         }
+
+        @Override
+        public void showEntryWhenCreating(VBox where) {
+            where.getChildren().addAll(loadFXML(CREATE_FXML));
+        }
+
+        @Override
+        public void onCreateEntry(Entry entry) {
+            try {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Integer.parseInt(releaseYearInput.getText()), Calendar.JANUARY, 1);
+                CDAudio cdAudio = new CDAudio(entry.getAddDate(), entry.getComment(), entry.getAuthor(), -1, entry.getCategory(),
+                        entry.getTitle(), calendar.getTime(), labelInput.getText(), coverUrl);
+
+                cdAudiosCRUDUseCase.createCDAudio(currentFamilyMember, cdAudio);
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+
+        public void onCoverChoose() {
+            try {
+                File result = fileChooser.showOpenDialog(stage);
+
+                if (result != null) {
+                    coverUrl = result.toURI().toURL().toExternalForm();
+                    coverInput.setImage(new Image(coverUrl));
+                }
+            } catch (MalformedURLException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
     }
 
-    class CDVideoTypeUI extends BaseEntryTypeUI {
-        private static final String FXML = "/fxml/show_cdvideo.fxml";
+    public class CDVideoTypeUI extends BaseEntryTypeUI {
+        private static final String SHOW_FXML = "/fxml/show_cdvideo.fxml";
+        private static final String CREATE_FXML = "/fxml/create_cdvideo.fxml";
 
         @FXML
-        private ImageView cover;
+        private ImageView cover, coverInput;
+
+        @FXML
+        private TextField releaseYearInput;
 
         @FXML
         private Label releaseYear;
+
+        private String coverUrl;
 
         @Override
         public void showEntry(Entry entry, VBox where) {
             try {
                 CDVideo cdVideo = cdVideosCRUDUseCase.loadCDVideo(currentFamilyMember, entry.getId());
 
-                where.getChildren().addAll(loadFXML(FXML));
+                where.getChildren().addAll(loadFXML(SHOW_FXML));
 
                 showEntry(entry);
 
                 cover.setImage(new Image(cdVideo.getCoverUrl()));
                 releaseYear.setText(getYear(cdVideo.getReleaseYear()));
             } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+
+        @Override
+        public void showEntryWhenCreating(VBox where) {
+            where.getChildren().addAll(loadFXML(CREATE_FXML));
+        }
+
+        @Override
+        public void onCreateEntry(Entry entry) {
+            try {
+                Calendar calendar = Calendar.getInstance();
+                calendar.set(Integer.parseInt(releaseYearInput.getText()), Calendar.JANUARY, 1);
+                CDVideo cdVideo = new CDVideo(entry.getAddDate(), entry.getComment(), entry.getAuthor(), -1, entry.getCategory(),
+                        entry.getTitle(), calendar.getTime(), coverUrl);
+
+                cdVideosCRUDUseCase.createCDVideo(currentFamilyMember, cdVideo);
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+
+        public void onCoverChoose() {
+            try {
+                File result = fileChooser.showOpenDialog(stage);
+
+                if (result != null) {
+                    coverUrl = result.toURI().toURL().toExternalForm();
+                    coverInput.setImage(new Image(coverUrl));
+                }
+            } catch (MalformedURLException exc) {
                 exc.printStackTrace();
 
                 showMessage(exc.getMessage());
@@ -239,6 +390,8 @@ public class UI {
         this.entryTypesUIs.put(Book.TYPE_ID, new BookTypeUI());
         this.entryTypesUIs.put(CDAudio.TYPE_ID, new CDAudioTypeUI());
         this.entryTypesUIs.put(CDVideo.TYPE_ID, new CDVideoTypeUI());
+
+        fileChooser = new FileChooser();
     }
 
     public void startTheSystem() {
@@ -593,7 +746,49 @@ public class UI {
     }
 
     public void goToCreateEntry() {
+        stage.setScene(loadFXML(CREATE_ENTRY_FXML, Arrays.asList(
+                getClass().getResource(MODENA_CSS).toExternalForm(),
+                getClass().getResource(MAIN_CSS).toExternalForm()
+        )));
 
+        boolean first = true;
+
+        createEntryToggleGroup = new ToggleGroup();
+
+        createEntryToggleGroup.selectedToggleProperty().addListener((a, oldValue, newValue) -> {
+            createEntrySpecificityBlock.getChildren().clear();
+
+            entryTypesUIs.get(newValue.getUserData()).showEntryWhenCreating(createEntrySpecificityBlock);
+        });
+
+        for (String typeId : entryTypesUIs.keySet()) {
+            RadioButton radioButton = new RadioButton(typeId);
+            radioButton.setToggleGroup(createEntryToggleGroup);
+            radioButton.setUserData(typeId);
+
+            createEntrySelectTypeBlock.getChildren().add(radioButton);
+
+            if (first) {
+                radioButton.setSelected(true);
+
+                first = false;
+            }
+        }
+
+        showStage();
+    }
+
+    public void onCreateEntry() {
+        String selectedTypeId = (String)createEntryToggleGroup.getSelectedToggle().getUserData();
+
+        Entry entry = new Entry(new Date(), createEntryComment.getText(), createEntryAuthor.getText(),
+                -1, currentCategoryHome.getId(), selectedTypeId, createEntryTitle.getText());
+
+        entryTypesUIs.get(selectedTypeId).onCreateEntry(entry);
+
+        showMessage("New entry was successfully created");
+
+        goToHome(currentCategoryHome);
     }
 
     public void goToCreateCategory() {

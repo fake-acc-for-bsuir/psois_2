@@ -186,32 +186,7 @@
     -fx-background-image: url("/back.png");
 }
 
-/*
-
-#logoTitle {
-    -fx-text-fill: #ea9655;
-    -fx-font-size: 36px;
+#createEntryComment {
+    -fx-pref-height: 100px;
+    -fx-pref-width: 200px;
 }
-
-#descriptionLabel {
-    -fx-text-fill: #e5745c;
-}
-
-#developedByLabel {
-    -fx-text-fill: #464646;
-}
-
-#header {
-    -fx-border-width: 0 0 1 0;
-    -fx-border-color: #e5745c;
-    -fx-background-color: #303030;
-}
-
-#statusLabel {
-    -fx-text-fill: #e5745c;
-    -fx-text-alignment: center;
-}
-
-#body {
-    -fx-background-color: #303030;
-}*/

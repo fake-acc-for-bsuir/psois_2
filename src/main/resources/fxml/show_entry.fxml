@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      prefHeight="600" prefWidth="389">
+    <HBox styleClass="header" alignment="CENTER_LEFT">
+        <Label styleClass="header_title">Entry</Label>
+        <HBox HBox.hgrow="ALWAYS"/>
+        <Button fx:id="goToEditEntryButton" styleClass="hl_action_button" onAction="#goToEditEntry"/>
+        <Button fx:id="goToCommentsButton" styleClass="hl_action_button" onAction="#goToComments"/>
+        <Button fx:id="goBackFromShowEntryButton" styleClass="hl_action_button" onAction="#goBackFromShowEntry"/>
+    </HBox>
+    <VBox spacing="10" fx:id="whereToShowEntry" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="5" left="5" right="5" bottom="5"/>
+        </padding>
+    </VBox>
+    <HBox spacing="5">
+        <padding>
+            <Insets top="5" bottom="5" right="5" left="5"/>
+        </padding>
+        <Button fx:id="goToAddToFavoritesButton" styleClass="hl_action_button" onAction="#goToAddToFavorites"/>
+        <Button fx:id="goToAddToCollectionButton" styleClass="hl_action_button" onAction="#goToAddToCollection"/>
+    </HBox>
+</VBox>

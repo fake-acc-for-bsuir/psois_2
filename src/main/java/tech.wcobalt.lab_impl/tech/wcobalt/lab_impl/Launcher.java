@@ -9,9 +9,7 @@ import tech.wcobalt.lab_impl.infrastructure.*;
 import tech.wcobalt.lab_impl.persistence.*;
 import tech.wcobalt.lab_impl.ui.UI;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 public class Launcher {
     public static void main(String... args) {
@@ -23,8 +21,19 @@ public class Launcher {
         CommentsRepository commentsRepository = new CommentsRepositoryImpl(new ArrayList<>());
 
         BooksRepository booksRepository = new BooksRepositoryImpl(categoriesRepository, entriesRepository, new ArrayList<>());
+        booksRepository.createBook(new Book(new Date(), "comment asda d as d", "some author", 0,
+                10000, "some book", new Date(), "some publisher",
+                "file:///home/wcobalt/Files/BSUIR/YP_3/scum-colorizer-2000/scumcolorizer2000/src/main/resources/logo.png"));
+
         CDAudiosRepository cdAudiosRepository = new CDAudiosRepositoryImpl(categoriesRepository, entriesRepository, new ArrayList<>());
+        cdAudiosRepository.createCDAudio(new CDAudio(new Date(), "comment asda d as d", "some author", 0,
+                10000, "some cd audio", new Date(), "some publisher",
+                "file:///home/wcobalt/Files/BSUIR/YP_3/scum-colorizer-2000/scumcolorizer2000/src/main/resources/upload.png"));
+
         CDVideosRepository cdVideosRepository = new CDVideosRepositoryImpl(categoriesRepository, entriesRepository, new ArrayList<>());
+        cdVideosRepository.createCDVideo(new CDVideo(new Date(), "comment asda d as d", "some author", 0,
+                10000, "some cd video", new Date(),
+                "file:///home/wcobalt/Files/BSUIR/YP_3/scum-colorizer-2000/scumcolorizer2000/src/main/resources/done.png"));
 
         RemoveOperation booksRemoveOperation = new BooksRemoveOperation(booksRepository);
         RemoveOperation cdAudiosRemoveOperation = new CDAudiosRemoveOperation(cdAudiosRepository);
@@ -53,7 +62,7 @@ public class Launcher {
         UI ui = new UI(authenticateUseCase, categoriesCRUDUseCase, entriesCRUDUseCase, booksCRUDUseCase,
                 cdAudiosCRUDUseCase, cdVideosCRUDUseCase, changeMyPasswordUseCase, commentsCRUDUseCase,
                 createFirstFamilyAdministratorUseCase, familyMembersCRUDUseCase, saveLoadSessionsUseCase,
-                viewCategoryUseCase);
+                viewCategoryUseCase, new HashMap<>());
 
         ui.startTheSystem();
     }

@@ -26,6 +26,9 @@ public class ViewCategoryUseCaseImpl implements ViewCategoryUseCase {
 
         List<Category> categories = categoriesRepository.loadChildrenCategories(category, false);
 
+        for (Category c : categories)
+            result.add(new CategoryElement(true, c, null));
+
         if (doLoadEntries) {
             EntryFilter entryFilter = new EntryFilter();
             entryFilter.setCategoryFilter(category, false);
@@ -35,9 +38,6 @@ public class ViewCategoryUseCaseImpl implements ViewCategoryUseCase {
             for (Entry entry : entries)
                 result.add(new CategoryElement(false, null, entry));
         }
-
-        for (Category c : categories)
-            result.add(new CategoryElement(true, c, null));
 
         return result;
     }

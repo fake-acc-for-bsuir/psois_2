@@ -82,7 +82,8 @@ public class EntriesRepositoryImpl implements EntriesRepository {
                 checkTextFilterMatch(entry.getComment(), entryFilter.getCommentValue(), entryFilter.isOnlyFullCommentMatch(), entryFilter.isDoSearchByComment()) &&
                 checkTextFilterMatch(entry.getTitle(), entryFilter.getTitleValue(), entryFilter.isOnlyFullTitleMatch(), entryFilter.isDoSearchByTitle()) &&
                 (!entryFilter.isDoSearchByCategory()
-                        || categoriesRepository.loadChildrenCategories(entryFilter.getCategoryForSearch(),
+                        || entry.getCategory() == entryFilter.getCategoryForSearch()
+                        ||categoriesRepository.loadChildrenCategories(entryFilter.getCategoryForSearch(),
                         entryFilter.isDoSearchByCategoryRecursively()).stream().anyMatch(c -> entry.getCategory() == c.getId()));
     }
 

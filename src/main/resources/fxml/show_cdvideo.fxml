@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" VBox.vgrow="ALWAYS" spacing="4">
+    <Label styleClass="entry_title" fx:id="title"/>
+    <HBox alignment="CENTER">
+        <padding>
+            <Insets topRightBottomLeft="10"/>
+        </padding>
+        <ImageView styleClass="entry_cover" fx:id="cover"/>
+    </HBox>
+    <HBox spacing="10">
+        <Label styleClass="entry_label">Author: </Label>
+        <Label styleClass="entry_value" fx:id="author"/>
+    </HBox>
+    <HBox spacing="10">
+        <Label styleClass="entry_label">Release year: </Label>
+        <Label styleClass="entry_value" fx:id="releaseYear"/>
+    </HBox>
+    <HBox spacing="10">
+        <Label styleClass="entry_label">Comment: </Label>
+        <Label styleClass="entry_value" fx:id="comment"/>
+    </HBox>
+</VBox>

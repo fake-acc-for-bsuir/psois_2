@@ -6,17 +6,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tech.wcobalt.lab_impl.app.*;
 import tech.wcobalt.lab_impl.domain.*;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class UI {
     private static final String MAIN_CSS = "/css/main.css";
@@ -34,6 +35,8 @@ public class UI {
 
     private static final String NEW_USER_FXML = "/fxml/new_user.fxml";
 
+    private static final String SHOW_ENTRY_FXML = "/fxml/show_entry.fxml";
+
     private static final String TITLE = "Home Library";
 
     private static final int MESSAGE_BOX_WIDTH = 230;
@@ -50,6 +53,12 @@ public class UI {
     private FamilyMembersCRUDUseCase familyMembersCRUDUseCase;
     private SaveLoadSessionsUseCase saveLoadSessionsUseCase;
     private ViewCategoryUseCase viewCategoryUseCase;
+
+    interface EntryTypeUI {
+        void showEntry(Entry entry, VBox where);
+    }
+
+    private Map<String, EntryTypeUI> entryTypesUIs;
 
     //model
     private Session session;
@@ -80,7 +89,127 @@ public class UI {
     @FXML
     private ListView<FamilyMember> familyMembersList;
 
+    @FXML
+    private VBox whereToShowEntry;
+
     private static final boolean IS_INFRASTRUCTURE_STUBBED = true;
+
+    abstract class BaseEntryTypeUI implements EntryTypeUI {
+        @FXML
+        private Label author, title, comment;
+
+        protected void showEntry(Entry entry) {
+            author.setText(entry.getAuthor());
+            title.setText(entry.getTitle());
+            comment.setText(entry.getComment());
+        }
+
+        protected Parent loadFXML(String fxmlResourceFile) {
+            try {
+                FXMLLoader fxmlLoader = new FXMLLoader();
+                fxmlLoader.setController(this);
+
+                return fxmlLoader.load(getClass().getResourceAsStream(fxmlResourceFile));
+            } catch (IOException exc) {
+                exc.printStackTrace();
+
+                return null;
+            }
+        }
+
+        protected String getYear(Date date) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(date);
+
+            return String.valueOf(calendar.get(Calendar.YEAR));
+        }
+    }
+
+    class BookTypeUI extends BaseEntryTypeUI {
+        private static final String FXML = "/fxml/show_book.fxml";
+
+        @FXML
+        private ImageView cover;
+
+        @FXML
+        private Label publisher, publishingYear;
+
+        @Override
+        public void showEntry(Entry entry, VBox where) {
+            try {
+                Book book = booksCRUDUseCase.loadBook(currentFamilyMember, entry.getId());
+
+                where.getChildren().addAll(loadFXML(FXML));
+
+                showEntry(entry);
+
+                cover.setImage(new Image(book.getCoverUrl()));
+                publisher.setText(book.getPublisher());
+                publishingYear.setText(getYear(book.getPublishingYear()));
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+    }
+
+    class CDAudioTypeUI extends BaseEntryTypeUI {
+        private static final String FXML = "/fxml/show_cdaudio.fxml";
+
+        @FXML
+        private ImageView cover;
+
+        @FXML
+        private Label label, releaseYear;
+
+        @Override
+        public void showEntry(Entry entry, VBox where) {
+            try {
+                CDAudio cdAudio = cdAudiosCRUDUseCase.loadCDAudio(currentFamilyMember, entry.getId());
+
+                where.getChildren().addAll(loadFXML(FXML));
+
+                showEntry(entry);
+
+                cover.setImage(new Image(cdAudio.getCoverUrl()));
+                label.setText(cdAudio.getLabel());
+                releaseYear.setText(getYear(cdAudio.getReleaseYear()));
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+    }
+
+    class CDVideoTypeUI extends BaseEntryTypeUI {
+        private static final String FXML = "/fxml/show_cdvideo.fxml";
+
+        @FXML
+        private ImageView cover;
+
+        @FXML
+        private Label releaseYear;
+
+        @Override
+        public void showEntry(Entry entry, VBox where) {
+            try {
+                CDVideo cdVideo = cdVideosCRUDUseCase.loadCDVideo(currentFamilyMember, entry.getId());
+
+                where.getChildren().addAll(loadFXML(FXML));
+
+                showEntry(entry);
+
+                cover.setImage(new Image(cdVideo.getCoverUrl()));
+                releaseYear.setText(getYear(cdVideo.getReleaseYear()));
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+    }
 
     public UI(AuthenticateUseCase authenticateUseCase, CategoriesCRUDUseCase categoriesCRUDUseCase,
               EntriesCRUDUseCase entriesCRUDUseCase, BooksCRUDUseCase booksCRUDUseCase,
@@ -88,7 +217,7 @@ public class UI {
               ChangeMyPasswordUseCase changeMyPasswordUseCase, CommentsCRUDUseCase commentsCRUDUseCase,
               CreateFirstFamilyAdministratorUseCase createFirstFamilyAdministratorUseCase,
               FamilyMembersCRUDUseCase familyMembersCRUDUseCase, SaveLoadSessionsUseCase saveLoadSessionsUseCase,
-              ViewCategoryUseCase viewCategoryUseCase) {
+              ViewCategoryUseCase viewCategoryUseCase, Map<String, EntryTypeUI> entryTypesUIs) {
         this.authenticateUseCase = authenticateUseCase;
         this.categoriesCRUDUseCase = categoriesCRUDUseCase;
         this.entriesCRUDUseCase = entriesCRUDUseCase;
@@ -101,6 +230,11 @@ public class UI {
         this.familyMembersCRUDUseCase = familyMembersCRUDUseCase;
         this.saveLoadSessionsUseCase = saveLoadSessionsUseCase;
         this.viewCategoryUseCase = viewCategoryUseCase;
+
+        this.entryTypesUIs = entryTypesUIs;
+        this.entryTypesUIs.put(Book.TYPE_ID, new BookTypeUI());
+        this.entryTypesUIs.put(CDAudio.TYPE_ID, new CDAudioTypeUI());
+        this.entryTypesUIs.put(CDVideo.TYPE_ID, new CDVideoTypeUI());
     }
 
     public void startTheSystem() {
@@ -133,6 +267,10 @@ public class UI {
     }
 
     public void goToHome() {
+        goToHome(null);
+    }
+
+    public void goToHome(Category category) {
         stage.setScene(loadFXML(HOME_FXML, Arrays.asList(
                 getClass().getResource(MODENA_CSS).toExternalForm(),
                 getClass().getResource(MAIN_CSS).toExternalForm()
@@ -169,7 +307,7 @@ public class UI {
         });
 
         try {
-            currentCategoryHome = categoriesCRUDUseCase.loadRootCategory(currentFamilyMember);
+            currentCategoryHome = category == null ? categoriesCRUDUseCase.loadRootCategory(currentFamilyMember) : category;
 
             showCurrentCategoryHome();
         } catch (RightsViolationException e) {
@@ -204,13 +342,41 @@ public class UI {
 
                 showCurrentCategoryHome();
             } else {
-                goToEntry(categoryElement.getEntry());
+                goToShowEntry(categoryElement.getEntry());
             }
         }
     }
 
-    public void goToEntry(Entry entry) {
+    public void goToEditEntry() {
 
+    }
+
+    public void goToComments() {
+
+    }
+
+    public void goBackFromShowEntry() {
+        goToHome(currentCategoryHome);
+    }
+
+    public void goToAddToFavorites() {
+
+    }
+
+    public void goToAddToCollection() {
+
+    }
+
+    public void goToShowEntry(Entry entry) {
+        stage.setScene(loadFXML(SHOW_ENTRY_FXML, Arrays.asList(
+                getClass().getResource(MODENA_CSS).toExternalForm(),
+                getClass().getResource(MAIN_CSS).toExternalForm()
+        )));
+
+        EntryTypeUI entryTypeUI = entryTypesUIs.get(entry.getTypeId());
+        entryTypeUI.showEntry(entry, whereToShowEntry);
+
+        showStage();
     }
 
     public void goToLogin() {

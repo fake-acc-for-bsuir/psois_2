@@ -121,7 +121,48 @@
     -fx-background-image: url("/remove.png");
 }
 
+.entry_title {
+    -fx-text-fill: #ea9655;
+    -fx-font-size: 18px;
+}
+
+.entry_cover {
+    -fx-pref-width: 200px;
+    -fx-pref-height: 200px;
+}
+
+.entry_label {
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+}
+
+.entry_value {
+    -fx-font-size: 14px;
+    -fx-text-fill: #bbb;
+}
+
+#goToAddToFavoritesButton {
+    -fx-background-image: url("/favorite.png");
+}
+
+#goToAddToCollectionButton {
+    -fx-background-image: url("/collections.png");
+}
+
+#goToEditEntryButton {
+    -fx-background-image: url("/edit.png");
+}
+
+#goToCommentsButton {
+    -fx-background-image: url("/comments.png");
+}
+
+#goBackFromShowEntryButton {
+    -fx-background-image: url("/back.png");
+}
+
 /*
+
 #logoTitle {
     -fx-text-fill: #ea9655;
     -fx-font-size: 36px;

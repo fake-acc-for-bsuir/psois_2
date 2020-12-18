@@ -286,6 +286,25 @@ public class UI {
         }
     }
 
+    public void goToRemoveElement() {
+        CategoryElement categoryElement = homeList.getSelectionModel().getSelectedItem();
+
+        if (categoryElement != null) {
+            try {
+                if (categoryElement.isCategory())
+                    categoriesCRUDUseCase.removeCategory(currentFamilyMember, categoryElement.getCategory().getId());
+                else
+                    entriesCRUDUseCase.removeEntry(currentFamilyMember, categoryElement.getEntry().getId());
+
+                showCurrentCategoryHome();
+            } catch (RightsViolationException exc) {
+                exc.printStackTrace();
+
+                showMessage(exc.getMessage());
+            }
+        }
+    }
+
     public void onSignIn() {
         try {
             session = authenticateUseCase.authenticateByPair(signInNickname.getText(), signInPassword.getText());

@@ -59,19 +59,11 @@ public class CategoriesRepositoryImpl implements CategoriesRepository {
         category.setId(nextId++);
 
         if (category.getParentCategory() != -1) {
-            if (category.getParentCategory() == rootCategory.getId()) {
-                rootCategory.getChildrenCategories().add(category.getId());
+            Category parentCategory = loadCategory(category.getParentCategory());
 
-                categories.removeIf(c -> c.getId() == rootCategory.getId());
+            parentCategory.getChildrenCategories().add(category.getId());
 
-                categories.add(copyCategory(rootCategory));
-            } else {
-                Category parentCategory = loadCategory(category.getParentCategory());
-
-                parentCategory.getChildrenCategories().add(category.getId());
-
-                saveCategory(parentCategory);
-            }
+            saveCategoryBackend(parentCategory);
         }
 
         categories.add(copyCategory(category));
@@ -79,13 +71,16 @@ public class CategoriesRepositoryImpl implements CategoriesRepository {
         return copyCategory(category);
     }
 
+    private void saveCategoryBackend(Category category) {
+        categories.removeIf(c -> c.getId() == category.getId());
+
+        categories.add(copyCategory(category));
+    }
+
     @Override
     public void saveCategory(Category category) {
-        if (category.getId() != rootCategory.getId()) {
-            categories.removeIf(c -> c.getId() == category.getId());
-
-            categories.add(copyCategory(category));
-        }
+        if (category.getId() != rootCategory.getId())
+            saveCategoryBackend(category);
     }
 
     @Override
@@ -101,7 +96,8 @@ public class CategoriesRepositoryImpl implements CategoriesRepository {
 
             Category parent = loadCategory(category.getParentCategory());
             parent.getChildrenCategories().removeIf(i -> i == category.getId());
-            saveCategory(parent);
+
+            saveCategoryBackend(parent);
         }
     }
 

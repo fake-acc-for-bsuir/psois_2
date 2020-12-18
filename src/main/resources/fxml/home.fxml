@@ -22,6 +22,7 @@
             <Button fx:id="goBackButton" styleClass="hl_action_button" onAction="#goBackCategoryHome"/>
             <Button fx:id="goToCreateEntryButton" styleClass="hl_action_button" onAction="#goToCreateEntry"/>
             <Button fx:id="goToCreateCategoryButton" styleClass="hl_action_button" onAction="#goToCreateCategory"/>
+            <Button fx:id="goToRemoveElementButton" styleClass="hl_action_button" onAction="#goToRemoveElement"/>
         </HBox>
         <HBox VBox.vgrow="ALWAYS">
             <ListView fx:id="homeList" VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">

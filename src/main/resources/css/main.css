@@ -48,6 +48,10 @@
     -fx-cursor: hand;
 }
 
+#goToRemoveElementButton {
+    -fx-background-image: url("/remove.png");
+}
+
 #goToFavoritesButton {
     -fx-background-image: url("/favorite.png");
 }

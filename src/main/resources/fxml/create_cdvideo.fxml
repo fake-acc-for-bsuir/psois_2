@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.image.ImageView?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml" spacing="5">
+    <TextField styleClass="hl_textfield" promptText="Release year" fx:id="releaseYearInput"/>
+    <HBox alignment="CENTER">
+        <ImageView fx:id="coverInput" fitWidth="70" fitHeight="70" preserveRatio="true"/>
+        <HBox HBox.hgrow="ALWAYS"/>
+        <Button styleClass="hl_button" onAction="#onCoverChoose">Choose cover</Button>
+    </HBox>
+</VBox>

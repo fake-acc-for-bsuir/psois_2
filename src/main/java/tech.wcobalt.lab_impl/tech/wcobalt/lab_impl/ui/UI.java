@@ -1,7 +1,6 @@
 package tech.wcobalt.lab_impl.ui;
 
 import javafx.event.EventHandler;
-import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,15 +8,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tech.wcobalt.lab_impl.app.*;
-import tech.wcobalt.lab_impl.domain.Category;
-import tech.wcobalt.lab_impl.domain.Entry;
-import tech.wcobalt.lab_impl.domain.FamilyMember;
-import tech.wcobalt.lab_impl.domain.Session;
+import tech.wcobalt.lab_impl.domain.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -35,6 +29,10 @@ public class UI {
     private static final String SECURITY_FXML = "/fxml/security.fxml";
 
     private static final String CREATE_FIRST_ADMINISTRATOR_FXML = "/fxml/create_first_administrator.fxml";
+
+    private static final String USERS_FXML = "/fxml/users.fxml";
+
+    private static final String NEW_USER_FXML = "/fxml/new_user.fxml";
 
     private static final String TITLE = "Home Library";
 
@@ -71,7 +69,16 @@ public class UI {
     private TextField securityOldPassword, securityNewPassword;
 
     @FXML
+    private TextField newUserNickname, newUserPassword;
+
+    @FXML
+    private RadioButton newUserMember;
+
+    @FXML
     private ListView<CategoryElement> homeList;
+
+    @FXML
+    private ListView<FamilyMember> familyMembersList;
 
     private static final boolean IS_INFRASTRUCTURE_STUBBED = true;
 
@@ -233,7 +240,69 @@ public class UI {
     }
 
     public void goToUsers() {
+        stage.setScene(loadFXML(USERS_FXML, Arrays.asList(
+                getClass().getResource(MODENA_CSS).toExternalForm(),
+                getClass().getResource(MAIN_CSS).toExternalForm()
+        )));
 
+        familyMembersList.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(FamilyMember familyMember, boolean empty) {
+                super.updateItem(familyMember, empty);
+
+                if (empty || familyMember == null)
+                    setText(null);
+                else {
+                    setText(familyMember.getNickname() + " (" +
+                            (familyMember.getRights() == Rights.FAMILY_ADMINISTRATOR ? "admin" : "member") + ")");
+                }
+            }
+        });
+
+        refreshFamilyMembersList();
+
+        showStage();
+    }
+
+    private void refreshFamilyMembersList() {
+        try {
+            List<FamilyMember> familyMembers = familyMembersCRUDUseCase.loadAllFamilyMembers(currentFamilyMember);
+
+            familyMembersList.itemsProperty().getValue().clear();
+            familyMembersList.itemsProperty().getValue().addAll(familyMembers);
+        } catch (RightsViolationException exc) {
+            exc.printStackTrace();
+
+            showMessage(exc.getMessage());
+        }
+    }
+
+    public void goToCreateUser() {
+        stage.setScene(loadFXML(NEW_USER_FXML, Arrays.asList(
+                getClass().getResource(MODENA_CSS).toExternalForm(),
+                getClass().getResource(MAIN_CSS).toExternalForm()
+        )));
+
+        showStage();
+    }
+
+    public void goToRemoveUser() {
+        FamilyMember familyMember = familyMembersList.getSelectionModel().getSelectedItem();
+
+        if (familyMember != null) {
+            if (familyMember.getId() != currentFamilyMember.getId()) {
+                try {
+                    familyMembersCRUDUseCase.removeFamilyMember(currentFamilyMember, familyMember.getId());
+
+                    refreshFamilyMembersList();
+                } catch (RightsViolationException exc) {
+                    exc.printStackTrace();
+
+                    showMessage(exc.getMessage());
+                }
+            } else
+                showMessage("You cannot delete yourself");
+        }
     }
 
     public void goToCollections() {
@@ -302,6 +371,27 @@ public class UI {
 
                 showMessage(exc.getMessage());
             }
+        }
+    }
+
+    public void onCreateFamilyMember() {
+        try {
+            String nickname = newUserNickname.getText();
+            String password = newUserPassword.getText();
+
+            Rights rights = newUserMember.isSelected() ? Rights.FAMILY_MEMBER : Rights.FAMILY_ADMINISTRATOR;
+
+            familyMembersCRUDUseCase.createFamilyMember(currentFamilyMember, new FamilyMember(nickname, password, 0, rights));
+
+            newUserNickname.clear();
+            newUserPassword.clear();
+            newUserMember.setSelected(true);
+
+            showMessage("The user was successfully created");
+        } catch (RightsViolationException exc) {
+            exc.printStackTrace();
+
+            showMessage(exc.getMessage());
         }
     }
 

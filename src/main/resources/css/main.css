@@ -113,6 +113,14 @@
     -fx-background-color: #191919;
 }
 
+#goToCreateUserButton {
+    -fx-background-image: url("/create.png");
+}
+
+#goToRemoveUserButton {
+    -fx-background-image: url("/remove.png");
+}
+
 /*
 #logoTitle {
     -fx-text-fill: #ea9655;
